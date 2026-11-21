@@ -5,7 +5,7 @@
 ## 功能
 
 - **docker run 转 Compose**：解析端口、挂载、环境变量、网络、重启策略、健康检查、资源限制等常用参数，输出 Compose V2 格式的 YAML；对无法直接等价转换的参数给出说明。
-- **Compose 格式化**：统一缩进（2 / 4 空格）、保留注释、校验 YAML 语法，并提示缺少 `image`/`build`、Compose V2 不再需要 `version` 等常见问题。
+- **Compose 格式化**：统一缩进（2 / 4 空格）、保留注释、校验 YAML 语法，并提示缺少 `image`/`build`、Compose V2 不再需要 `version` 等常见问题；可选按 Compose 规范顺序排序服务内指令（默认开启）。
 
 ## 本地开发
 
@@ -41,5 +41,7 @@ npx wrangler pages deploy dist --project-name composeforge
 ```
 
 仓库中的 `wrangler.toml` 已配置 `pages_build_output_dir`，直接运行 `npx wrangler pages deploy dist` 也可以。
+
+> 注意：`wrangler.toml` 只声明输出目录，**构建命令必须在 Cloudflare Dashboard 的项目设置中填写**（Pages 不支持通过 Wrangler 配置文件指定 build command）。若构建日志出现 `Output directory "dist" not found`，说明构建命令为空或框架预设不匹配，请确认 Build command 为 `npm run build`。
 
 > 站点为纯静态资源，无需 Worker、环境变量或绑定。

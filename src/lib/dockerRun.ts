@@ -270,7 +270,7 @@ for (const def of [...VALUE_OPTIONS, ...BOOLEAN_OPTIONS]) {
   if (def.short) BY_SHORT.set(def.short, def)
 }
 
-const KEY_ORDER = [
+export const SERVICE_KEY_ORDER = [
   'image', 'container_name', 'command', 'entrypoint', 'ports', 'expose', 'volumes', 'volumes_from',
   'environment', 'env_file', 'labels', 'network_mode', 'networks', 'hostname', 'domainname',
   'mac_address', 'dns', 'dns_search', 'dns_opt', 'extra_hosts', 'privileged', 'user', 'working_dir',
@@ -282,8 +282,8 @@ const KEY_ORDER = [
 
 function orderService(service: Record<string, unknown>): Record<string, unknown> {
   const entries = Object.entries(service).sort(([a], [b]) => {
-    const ai = KEY_ORDER.indexOf(a)
-    const bi = KEY_ORDER.indexOf(b)
+    const ai = SERVICE_KEY_ORDER.indexOf(a)
+    const bi = SERVICE_KEY_ORDER.indexOf(b)
     if (ai === -1 && bi === -1) return a.localeCompare(b)
     if (ai === -1) return 1
     if (bi === -1) return -1

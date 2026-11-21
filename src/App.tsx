@@ -136,6 +136,7 @@ export default function App() {
   const [runInput, setRunInput] = useState('')
   const [composeInput, setComposeInput] = useState('')
   const [indent, setIndent] = useState<2 | 4>(2)
+  const [sortDirectives, setSortDirectives] = useState(true)
 
   const conversion = useMemo<ConversionState>(() => {
     if (!runInput.trim()) return null
@@ -148,8 +149,8 @@ export default function App() {
 
   const formatting = useMemo<FormatResult | null>(() => {
     if (!composeInput.trim()) return null
-    return formatCompose(composeInput, indent)
-  }, [composeInput, indent])
+    return formatCompose(composeInput, indent, sortDirectives)
+  }, [composeInput, indent, sortDirectives])
 
   const conversionYaml = conversion?.ok ? conversion.result.yaml : ''
 
@@ -251,7 +252,7 @@ export default function App() {
             <div className="panel-head">
               <div>
                 <h2>docker-compose.yml 格式化</h2>
-                <p>统一缩进与换行、校验语法、检查常见 Compose 配置问题，注释会保留。</p>
+                <p>统一缩进与换行、校验语法、按规范排序服务内指令，注释会保留。</p>
               </div>
               <div className="actions">
                 <div className="segmented" aria-label="缩进宽度">
@@ -265,6 +266,14 @@ export default function App() {
                     </button>
                   ))}
                 </div>
+                <label className="checkbox">
+                  <input
+                    type="checkbox"
+                    checked={sortDirectives}
+                    onChange={(event) => setSortDirectives(event.target.checked)}
+                  />
+                  指令排序
+                </label>
                 <button className="ghost-button" onClick={() => setComposeInput(COMPOSE_EXAMPLE)}>加载示例</button>
                 <button className="ghost-button" onClick={() => setComposeInput('')} disabled={!composeInput}>清空</button>
               </div>

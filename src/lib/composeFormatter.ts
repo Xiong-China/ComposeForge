@@ -1,4 +1,5 @@
 import YAML from 'yaml'
+import { SERVICE_KEY_ORDER } from './dockerRun.ts'
 
 export interface FormatResult {
   yaml: string
@@ -23,7 +24,38 @@ function forceBlockStyle(node: unknown): void {
   if (value.value) forceBlockStyle(value.value)
 }
 
-export function formatCompose(input: string, indent: 2 | 4 = 2): FormatResult {
+interface PairLike {
+  key: unknown
+  value: unknown
+}
+
+function sortServiceDirectives(doc: YAML.Document.Parsed): void {
+  if (!YAML.isMap(doc.contents)) return
+  const services = doc.contents.get('services', true)
+  if (!YAML.isMap(services)) return
+
+  const rank = (pair: PairLike): number => {
+    if (!YAML.isScalar(pair.key)) return -1
+    return SERVICE_KEY_ORDER.indexOf(String(pair.key.value))
+  }
+
+  for (const servicePair of services.items) {
+    const service = servicePair.value
+    if (!YAML.isMap(service)) continue
+    const items = service.items as PairLike[]
+    const positions = new Map(items.map((item, index) => [item, index]))
+    items.sort((a, b) => {
+      const ar = rank(a)
+      const br = rank(b)
+      if (ar === -1 && br === -1) return positions.get(a)! - positions.get(b)!
+      if (ar === -1) return 1
+      if (br === -1) return -1
+      return ar - br
+    })
+  }
+}
+
+export function formatCompose(input: string, indent: 2 | 4 = 2, sortDirectives = true): FormatResult {
   const hints: string[] = []
 
   if (!input.trim()) {
@@ -49,6 +81,7 @@ export function formatCompose(input: string, indent: 2 | 4 = 2): FormatResult {
     }
 
     forceBlockStyle(doc.contents)
+    if (sortDirectives) sortServiceDirectives(doc)
 
     const yaml = doc.toString({
       indent,

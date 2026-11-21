@@ -166,6 +166,17 @@ svg {
 }
 .segmented button.active { color: #eafff1; background: #223453; }
 
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: #b8c8de;
+  cursor: pointer;
+  user-select: none;
+}
+.checkbox input { width: 15px; height: 15px; margin: 0; accent-color: #4ade80; cursor: pointer; }
+
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 
 .editor {
